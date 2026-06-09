@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiwake - Panel del Sistema</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box;}
+        
+        /* --- SKIN PREMIUM DEL LOGIN (MODIFICADO) --- */
+        .login-wrapper {
+            display: flex; width: 100%; max-width: 750px; /* Caja más corta */
+            background: white; border-radius: 16px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); overflow: hidden; min-height: 450px;
+        }
+        .login-form-container { 
+            flex: 1; padding: 40px; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; /* Centra todo el contenido */
+        }
+        .login-logo-container {
+            flex: 1; background: linear-gradient(135deg, #5b2161 0%, #3a153e 100%); 
+            display: flex; justify-content: center; align-items: center; padding: 40px;
+        }
+        .login-logo-container img { max-width: 75%; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        
+        @media (max-width: 768px) { .login-wrapper { flex-direction: column-reverse; } .login-logo-container { padding: 30px; } .login-logo-container img { max-width: 50%; } }
+
+        /* NUEVO: INPUTS DE LOGIN CENTRADOS Y MODERNOS */
+        .input-login {
+            text-align: center;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            color: #5b2161;
+            letter-spacing: 1px;
+        }
+        .input-login::placeholder { font-weight: normal; font-size: 14px; letter-spacing: normal; color: #aab7c4; }
+
+        /* --- ESTILOS GENERALES --- */
+        .admin-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 500px; margin: auto; }
+        .admin-dashboard-wrapper { width: 100%; max-width: 1000px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; }
+        
+        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f2f5; padding-bottom: 15px; width: 100%; }
+        .header h1 { color: #5b2161; margin: 0; font-size: 26px; }
+        .header p { color: #7f8c8d; margin: 5px 0 0 0; font-size: 14px; }
+        
+        .form-group { margin-bottom: 15px; text-align: left; width: 100%; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; font-size: 14px; }
+        input { width: 100%; padding: 14px; border: 1px solid #ced4da; border-radius: 6px; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { outline: none; border-color: #5b2161; box-shadow: 0 0 5px rgba(91, 33, 97, 0.2); }
+        
+        .input-center { text-align: center; font-family: 'Courier New', Courier, monospace; font-size: 24px; font-weight: bold; color: #5b2161; letter-spacing: 1px;}
+        input[readonly] { background-color: #f8f9fa; color: #e74c3c; cursor: not-allowed; border: 2px dashed #ced4da; }
+        
+        button { width: 100%; padding: 14px; background-color: #5b2161; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: #4a1a4f; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        
+        .btn-search { background-color: #34495e; margin-top: 10px; }
+        .btn-search:hover { background-color: #2c3e50; }
+        .btn-success { background-color: #27ae60; margin-top: 15px; }
+        .btn-success:hover { background-color: #2ecc71; }
+        .btn-redeem { background-color: #e74c3c; margin-top: 15px; border: 2px solid #c0392b; animation: pulse 1.5s infinite; }
+        .btn-excel { background-color: #217346; width: auto; padding: 10px 20px; font-size: 14px; margin-bottom: 15px; float: right; }
+        .btn-wa { background-color: #25D366; color: white; padding: 8px 15px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block; transition: 0.2s; }
+        .btn-wa:hover { background-color: #1ebe57; transform: scale(1.05); }
+
+        .hidden { display: none !important; }
+        
+        /* --- ESTILOS DEL CAJERO --- */
+        .user-info-box { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-top: 20px; text-align: center; }
+        .user-info-box h3 { margin: 0; color: #2c3e50; }
+        .info-dates { font-size: 12px; color: #7f8c8d; margin: 8px 0; font-weight: 600; }
+        .sticker-badge { background-color: #f1c40f; color: #d35400; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; margin-top: 5px; font-size: 18px; }
+        
+        /* --- ESTILOS DEL ADMINISTRADOR --- */
+        .table-container { width: 100%; overflow-x: auto; border: 1px solid #dee2e6; border-radius: 8px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; text-align: left; }
+        th { background-color: #5b2161; color: white; padding: 12px 15px; font-size: 14px; }
+        td { padding: 12px 15px; border-bottom: 1px solid #dee2e6; font-size: 14px; color: #2c3e50; }
+        tr:hover { background-color: #f8f9fa; }
+        .search-bar-admin { display: flex; gap: 15px; margin-bottom: 20px; }
+
+        .events-box { margin-top: 25px; padding-top: 20px; border-top: 2px solid #f0f2f5; }
+        .events-title { color: #2c3e50; font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div id="login-section" class="login-wrapper">
+        <div class="login-form-container">
+            <div class="header" style="border-bottom: none;">
+                <h1 style="font-size: 28px;">Chiwake</h1>
+                <p>Acceso al Sistema</p>
+            </div>
+            
+            <div class="form-group" style="max-width: 250px; text-align: center;">
+                <label style="text-align: center;">Usuario:</label>
+                <input type="text" id="staff-user" class="input-login" placeholder="admin o caja" autocomplete="off" style="text-transform: lowercase;">
+            </div>
+            <div class="form-group" style="max-width: 250px; text-align: center;">
+                <label style="text-align: center;">Contraseña:</label>
+                <input type="password" id="staff-password" class="input-login" placeholder="••••••••">
+            </div>
+            <button id="btn-login" onclick="loginStaff()" style="max-width: 250px; margin-top: 10px;">Ingresar</button>
+        </div>
+        
+        <div class="login-logo-container">
+            <img src="images.png" alt="Logo Chiwake">
+        </div>
+    </div>
+
+    <div class="admin-card hidden" id="cajero-section">
+        <div class="header">
+            <h1>Caja - Stickers</h1>
+            <p>Rol: <span style="font-weight: bold;">Cajero</span></p>
+        </div>
+        
+        <div class="form-group">
+            <label>Celular del Cliente:</label>
+            <input type="tel" id="search-celular" class="input-center" placeholder="987 654 321" maxlength="11" oninput="formatearCelular(this)">
+            <button id="btn-search" class="btn-search" onclick="buscarCliente()">🔍 Buscar Cliente</button>
+        </div>
+
+        <div id="client-management" class="hidden">
+            <div class="user-info-box">
+                <h3 id="display-name">Nombre</h3>
+                <div class="info-dates">Nacimiento: <span id="display-bday">--/--/--</span> | Registro: <span id="display-reg">--/--/--</span></div>
+                <div class="sticker-badge">Stickers actuales: <span id="display-stickers">0</span></div>
+            </div>
+            <button id="btn-redeem" class="btn-redeem hidden" onclick="canjearPremio()">🎁 Canjear Plato de Carta (-10 Stickers)</button>
+            <div style="margin-top: 25px; border-top: 1px dashed #ccc; padding-top: 20px;">
+                <div class="form-group">
+                    <label>Monto Total de Consumo (S/):</label>
+                    <input type="number" id="input-consumo" class="input-center" placeholder="Ej: 160.50" step="0.01" oninput="calcularStickers()">
+                </div>
+                <div class="form-group">
+                    <label>Stickers a Asignar (Automático):</label>
+                    <input type="number" id="input-stickers" class="input-center" placeholder="0" readonly>
+                </div>
+                <button id="btn-save" class="btn-success" onclick="guardarTransaccion()">✅ Confirmar y Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-dashboard-wrapper hidden" id="admin-section">
+        <div class="header">
+            <h1>👑 Administración General</h1>
+            <p>Auditoría, Reportes y Fidelización de Clientes</p>
+        </div>
+        
+        <div class="events-box">
+            <h3 class="events-title">📅 Fidelización: Eventos de Hoy</h3>
+            <div id="admin-events-container">
+                <p style="color: #7f8c8d; font-size: 14px; font-style: italic;">Buscando clientes...</p>
+            </div>
+        </div>
+
+        <div class="events-box">
+            <h3 class="events-title">📊 Historial de Transacciones</h3>
+            <div class="search-bar-admin">
+                <input type="text" id="admin-filter" placeholder="🔍 Filtrar por Nombre o Celular..." onkeyup="filtrarTabla()" style="flex: 1;">
+                <button class="btn-excel" onclick="descargarExcel()">📥 Exportar Excel (CSV)</button>
+            </div>
+            <div class="table-container">
+                <table id="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Celular</th>
+                            <th>Nombre</th>
+                            <th>Consumo</th>
+                            <th>Stickers Modificados</th>
+                            <th>Total Actual</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PEGA AQUÍ TU URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzGBex38bIuwEcphucOhrwp0PlF5yAV5O6KVGJYJ77D1L0xpcQdxgXpiLY7G60MHCPj/exec';
+        let clienteActual = ""; 
+        let reporteGlobalData = []; 
+
+        function formatearCelular(input) {
+            let valor = input.value.replace(/\D/g, ''); 
+            let formateado = valor.match(/.{1,3}/g); 
+            if (formateado) input.value = formateado.join(' '); else input.value = '';
+        }
+
+        async function loginStaff() {
+            const user = document.getElementById('staff-user').value.toLowerCase().trim();
+            const pwd = document.getElementById('staff-password').value.trim();
+            if (!user || !pwd) return;
+            
+            const btn = document.getElementById('btn-login');
+            btn.innerText = "Conectando..."; btn.disabled = true;
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'staffLogin', usuario: user, password: pwd }) });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    document.getElementById('login-section').classList.add('hidden');
+                    
+                    if (data.rol === 'administrador') {
+                        document.getElementById('admin-section').classList.remove('hidden');
+                        cargarDatosAdmin();
+                        cargarEventosHoy();
+                    } else {
+                        document.getElementById('cajero-section').classList.remove('hidden');
+                    }
+                } else alert(data.message);
+            } catch (error) { alert("Error de conexión"); }
+            btn.innerText = "Ingresar"; btn.disabled = false;
+        }
+
+        /* --- FUNCIONES CAJERO --- */
+        async function buscarCliente() {
+            const celular = document.getElementById('search-celular').value.replace(/\s/g, '');
+            if (celular.length < 9) return;
+            const btn = document.getElementById('btn-search');
+            btn.innerText = "Buscando..."; btn.disabled = true;
+            document.getElementById('client-management').classList.add('hidden');
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'checkUser', celular: celular }) });
+                const data = await response.json();
+                if (data.exists) {
+                    clienteActual = celular;
+                    const u = data.user;
+                    document.getElementById('display-name').innerText = u.nombres;
+                    document.getElementById('display-stickers').innerText = u.stickers;
+                    document.getElementById('display-bday').innerText = u.cumpleanos ? new Date(u.cumpleanos).toLocaleDateString('es-PE') : "N/A";
+                    document.getElementById('display-reg').innerText = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleDateString('es-PE') : "N/A";
+                    const btnRedeem = document.getElementById('btn-redeem');
+                    if (parseInt(u.stickers) >= 10) btnRedeem.classList.remove('hidden');
+                    else btnRedeem.classList.add('hidden');
+                    document.getElementById('input-consumo').value = '';
+                    document.getElementById('input-stickers').value = '';
+                    document.getElementById('client-management').classList.remove('hidden');
+                } else alert('Cliente no registrado.');
+            } catch (error) { alert("Error de red"); }
+            btn.innerText = "🔍 Buscar Cliente"; btn.disabled = false;
+        }
+
+        function calcularStickers() {
+            const consumo = parseFloat(document.getElementById('input-consumo').value);
+            if (!isNaN(consumo) && consumo >= 0) document.getElementById('input-stickers').value = Math.floor(consumo / 50);
+            else document.getElementById('input-stickers').value = '';
+        }
+
+        async function guardarTransaccion() {
+            const consumo = document.getElementById('input-consumo').value;
+            const stickersNuevos = document.getElementById('input-stickers').value;
+            if (!consumo || !stickersNuevos || isNaN(stickersNuevos) || parseInt(stickersNuevos) < 0) return alert("Ingresa el consumo.");
+            const btn = document.getElementById('btn-save');
+            btn.innerText = "Guardando..."; btn.disabled = true;
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'addStickers', celular: clienteActual, consumo: consumo, stickersNuevos: stickersNuevos }) });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert(`¡Éxito! Total de stickers: ${data.total}`);
+                    document.getElementById('client-management').classList.add('hidden');
+                    document.getElementById('search-celular').value = ''; 
+                } else alert(data.message);
+            } catch (error) { alert("Error de red"); }
+            btn.innerText = "✅ Confirmar y Guardar"; btn.disabled = false;
+        }
+
+        async function canjearPremio() {
+            if (!confirm("¿Entregarás el plato gratis a este cliente? Se restarán 10 stickers.")) return;
+            const btn = document.getElementById('btn-redeem');
+            btn.innerText = "Procesando..."; btn.disabled = true;
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'redeemPrize', celular: clienteActual }) });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert("¡Canje registrado exitosamente!");
+                    document.getElementById('client-management').classList.add('hidden');
+                    document.getElementById('search-celular').value = ''; 
+                } else alert(data.message);
+            } catch (error) { alert("Error de red"); }
+            btn.innerText = "🎁 Canjear Plato de Carta (-10 Stickers)"; btn.disabled = false;
+        }
+
+        /* --- FUNCIONES ADMINISTRADOR --- */
+        async function cargarDatosAdmin() {
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getReports' }) });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    reporteGlobalData = data.data; 
+                    pintarTablaAdmin(reporteGlobalData);
+                } else {
+                    document.getElementById('admin-table-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">No hay transacciones.</td></tr>`;
+                }
+            } catch (error) { alert("Error al cargar la tabla"); }
+        }
+
+        function pintarTablaAdmin(datos) {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            for (let i = datos.length - 1; i > 0; i--) {
+                const fila = datos[i];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${fila[0]}</td>
+                    <td style="font-family: monospace; font-weight: bold;">${fila[1]}</td>
+                    <td>${fila[2]}</td>
+                    <td>S/ ${fila[3]}</td>
+                    <td style="color: ${fila[4] < 0 ? '#e74c3c' : '#27ae60'}; font-weight: bold;">${fila[4] > 0 ? '+'+fila[4] : fila[4]}</td>
+                    <td>${fila[5]}</td>
+                    <td>${fila[6]}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function filtrarTabla() {
+            const filtro = document.getElementById('admin-filter').value.toLowerCase();
+            const datosFiltrados = [reporteGlobalData[0]]; 
+            for (let i = 1; i < reporteGlobalData.length; i++) {
+                const fila = reporteGlobalData[i];
+                if (String(fila[1]).toLowerCase().includes(filtro) || String(fila[2]).toLowerCase().includes(filtro)) {
+                    datosFiltrados.push(fila);
+                }
+            }
+            pintarTablaAdmin(datosFiltrados);
+        }
+
+        function descargarExcel() {
+            if(reporteGlobalData.length === 0) return alert("No hay datos para descargar");
+            let csvContent = "data:text/csv;charset=utf-8,";
+            reporteGlobalData.forEach(function(rowArray) {
+                let row = rowArray.join(",");
+                csvContent += row + "\r\n";
+            });
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Contabilidad_Chiwake.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function cargarEventosHoy() {
+            const container = document.getElementById('admin-events-container');
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getTodayEvents' }) });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    container.innerHTML = '';
+                    if (data.eventos.length === 0) {
+                        container.innerHTML = '<p style="color: #7f8c8d; font-size: 14px;">No hay cumpleaños ni aniversarios registrados para el día de hoy.</p>';
+                        return;
+                    }
+                    
+                    data.eventos.forEach(ev => {
+                        let colorBorde = ev.tipo === 'cumpleaños' ? '#f39c12' : '#9b59b6';
+                        let icono = ev.tipo === 'cumpleaños' ? '🎂 Cumpleaños' : `🎉 Aniversario (${ev.anios} año/s)`;
+                        let primerNombre = ev.nombres.split(' ')[0];
+                        
+                        let mensaje = ev.tipo === 'cumpleaños' 
+                            ? `¡Hola ${primerNombre}! Feliz cumpleaños de parte de la familia Chiwake. Te esperamos hoy para engreírte con un postre de cortesía. 🍰`
+                            : `¡Hola ${primerNombre}! Hoy cumples ${ev.anios} año(s) siendo parte de Chiwake Rewards. Gracias por tu preferencia, te esperamos con una sorpresa. 🎁`;
+                        
+                        let linkWa = `https://api.whatsapp.com/send?phone=51${ev.celular}&text=${encodeURIComponent(mensaje)}`;
+
+                        container.innerHTML += `
+                            <div style="background: white; border: 1px solid #dee2e6; border-left: 5px solid ${colorBorde}; padding: 12px 20px; margin-bottom: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <div>
+                                    <strong style="color: #2c3e50; font-size: 16px;">${ev.nombres}</strong><br>
+                                    <span style="font-size: 13px; color: #7f8c8d;">${icono} | Cel: ${ev.celular}</span>
+                                </div>
+                                <a href="${linkWa}" target="_blank" class="btn-wa">📲 Enviar WhatsApp</a>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                container.innerHTML = '<p style="color: #e74c3c; font-size: 14px;">Error al cargar los eventos del día.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
